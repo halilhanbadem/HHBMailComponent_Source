@@ -31,27 +31,29 @@ interface
      IdExplicitTLSClientServerBase,
      IdMessageClient,
      IdSMTPBase,
-     IdSMTP;
+     IdSMTP,
+     IdAttachmentFile,
+     IdText;
 
 type
- FContentType = (TextType, HTML);
- FCharSet = (utf8);
- THBBMailSend = Class(TComponent)
+ THHBMailSend = Class(TComponent)
    private
-     PAuthor: String;
-     PMail: String;
-     PSMTPHost: String;
-     PSMTPPort: Word;
-     PSMTPMailAddress: String;
-     PSMTPMailPassword: String;
-     PMailSubject: String;
-     PClientMailAddress: String;
-     PClientMailName: String;
-     PMailReplyToAddress: String;
-     PSMTPName: String;
-     PMailContent: TStringList;
-     PMailContentType: FContentType;
-     PCharSet: FCharSet;
+     FAuthor: String;
+     FMail: String;
+     FSMTPHost: String;
+     FSMTPPort: Word;
+     FSMTPMailAddress: String;
+     FSMTPMailPassword: String;
+     FMailSubject: String;
+     FClientMailAddress: String;
+     FClientMailName: String;
+     FMailReplyToAddress: String;
+     FSMTPName: String;
+     FContentID: String;
+     FMailContent: TStringList;
+     FConnectTimeOut: Integer;
+     FAttachFileName: string;
+     FAttachType: String;
      SMTPComponent: TIdSMTP;
      EMailComponent: TIdMessage;
      LHandlerComponent: TIdSSLIOHandlerSocketOpenSSL;
@@ -62,65 +64,71 @@ type
      Procedure Connect;
      Procedure SendMail;
    published
-    property AuthorName: String read PAuthor;
-    property AuthorMailAddress: String read PMail;
-    property SMTPHost: String read PSMTPHost write PSMTPHost;
-    property SMTPPort: Word read PSMTPPort write PSMTPPort;
-    property SMTPMailAddress: String read PSMTPMailAddress write PSMTPMailAddress;
-    property SMTPMailPassword: String read PSMTPMailPassword write PSMTPMailPassword;
-    property MailSubject: String read PMailSubject write PMailSubject;
-    property ClientMailAddress: String read PClientMailAddress write PClientMailAddress;
-    property ClientMailName: String read PClientMailName write PClientMailName;
-    property MailReplyToAddress: String read PMailReplyToAddress write PMailReplyToAddress;
-    property MailContent: TStringList read PMailContent write WLines;
-    property MailContentType: FContentType read PMailContentType write PMailContentType;
-    property MailContentCharSet: FCharSet read PCharSet write PCharSet;
-    property MailName: String read PSMTPName write PSMTPName;
+    property AuthorName: String read FAuthor;
+    property AuthorMailAddress: String read FMail;
+    property SMTPHost: String read FSMTPHost write FSMTPHost;
+    property SMTPPort: Word read FSMTPPort write FSMTPPort;
+    property SMTPMailAddress: String read FSMTPMailAddress write FSMTPMailAddress;
+    property SMTPMailPassword: String read FSMTPMailPassword write FSMTPMailPassword;
+    property MailSubject: String read FMailSubject write FMailSubject;
+    property ClientMailAddress: String read FClientMailAddress write FClientMailAddress;
+    property ClientMailName: String read FClientMailName write FClientMailName;
+    property MailReplyToAddress: String read FMailReplyToAddress write FMailReplyToAddress;
+    property MailContent: TStringList read FMailContent write WLines;
+    property MailName: String read FSMTPName write FSMTPName;
+    property ConnectionTimeOut: Integer read FConnectTimeOut write FConnectTimeOut;
+    property AttachFile: string read FAttachFileName write FAttachFileName;
+    property AttachType: string read FAttachType write FAttachType;
+    property AttachFileContentID: string read FContentID write FContentID;
  End;
     Procedure Register;
 implementation
      {HBBMailSend}
 
+
 procedure Register;
 begin
-  RegisterComponents('HHB Mail Component', [THBBMailSend]);
+  RegisterComponents('HHB Mail Component', [THHBMailSend]);
 end;
 
 
-constructor THBBMailSend.Create(AOwner: TComponent);
+constructor THHBMailSend.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  PAuthor := 'Halil Han Badem';    //Please do not change
-  PMail := 'halilbadem1903@gmail.com'; //For communication
-  PMailContent := TStringList.Create;
+  FAuthor := 'Halil Han Badem';    //Please do not change
+  FMail := 'halilbadem1903@gmail.com'; //For communication
+  FMailContent := TStringList.Create;
   SMTPComponent := TIdSMTP.Create(nil);
   EMailComponent := TIdMessage.Create(nil);
   LHandlerComponent := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
 end;
 
-destructor THBBMailSend.Destroy;
+destructor THHBMailSend.Destroy;
 begin
+  SMTPComponent.Destroy;
+  EMailComponent.Destroy;
+  LHandlerComponent.Destroy;
   inherited Destroy;
 end;
 
-Procedure THBBMailSend.WLines(Value: TStringList);
+Procedure THHBMailSend.WLines(Value: TStringList);
 begin
-  PMailContent.Assign(Value);
+  FMailContent.Assign(Value);
 end;
 
-Procedure THBBMailSend.Connect;
+Procedure THHBMailSend.Connect;
 begin
   if SMTPComponent.Connected then SMTPComponent.Disconnect();
 
-   SMTPComponent.Host := PSMTPHost;
+   SMTPComponent.Host := FSMTPHost;
    SMTPComponent.AuthType := satDefault;
-   SMTPComponent.Username := PSMTPMailAddress;
-   SMTPComponent.Password := PSMTPMailPassword;
-   SMTPComponent.Port := PSMTPPort;
+   SMTPComponent.Username := FSMTPMailAddress;
+   SMTPComponent.Password := FSMTPMailPassword;
+   SMTPComponent.Port := FSMTPPort;
 
-   LHandlerComponent.Destination := PSMTPHost + ':' + IntToStr(PSMTPPort);
-   LHandlerComponent.Host := PSMTPHost;
-   LHandlerComponent.Port := PSMTPPort;
+   LHandlerComponent.Destination := FSMTPHost + ':' + IntToStr(FSMTPPort);
+   LHandlerComponent.Host := FSMTPHost;
+   LHandlerComponent.Port := FSMTPPort;
    LHandlerComponent.DefaultPort := 0;
    LHandlerComponent.SSLOptions.Method := sslvTLSv1;
    LHandlerComponent.SSLOptions.Mode := sslmUnassigned;
@@ -129,40 +137,49 @@ begin
 
    SMTPComponent.IOHandler := LHandlerComponent;
    SMTPComponent.UseTLS := utUseExplicitTLS;
-   SMTPComponent.ConnectTimeout := 10000;
+   SMTPComponent.ConnectTimeout := FConnectTimeOut;
 
 
    SMTPComponent.Connect;      ///connect...
 end;
 
 
-procedure THBBMailSend.SendMail;
+procedure THHBMailSend.SendMail;
 begin
    EMailComponent.Clear;
-   EMailComponent.From.Address := PSMTPMailAddress;
-   EMailComponent.From.Name := PSMTPName;
-   EMailComponent.ReplyTo.EMailAddresses := PMailReplyToAddress;
-   EMailComponent.Recipients.Add.Name :=  PClientMailName;
-   EMailComponent.Recipients.EMailAddresses := PClientMailAddress;
-   EMailComponent.Subject := PMailSubject;
+   EMailComponent.From.Address := FSMTPMailAddress;
+   EMailComponent.From.Name := FSMTPName;
+   EMailComponent.ReplyTo.EMailAddresses := FMailReplyToAddress;
+   EMailComponent.Recipients.Add.Name :=  FClientMailName;
+   EMailComponent.Recipients.EMailAddresses := FClientMailAddress;
+   EMailComponent.Subject := FMailSubject;
+   EMailComponent.ContentType := 'multipart/related; type="text/html"';
+   EMailComponent.CharSet := 'utf-8';
 
-   if (FContentType.TextType = TextType) then
+   with TIdText.Create(EMailComponent.MessageParts, nil) do
    begin
-    EMailComponent.ContentType := 'text/plain';
+     Body.Text := FMailContent.Text;
+     CharSet := 'utf-8';
+     ContentType := 'text/html';
    end;
 
-   if FContentType.HTML = HTML then
+    if FAttachFileName.Length <> 0 then
    begin
-     EMailComponent.ContentType := 'text/html'
+     if FileExists(FAttachFileName, True) = True then
+     begin
+       with TIdAttachmentFile.Create(EMailComponent.MessageParts, FAttachFileName) do
+      begin
+       ContentType := FAttachType;
+       ContentID := FContentID;
+       DisplayName := ExtractFileName(FAttachFileName);
+       FileName := ExtractFileName(FAttachFileName);
+      end;
+     end;
    end;
 
-    if PCharSet = utf8 then   //just only
-   begin
-      EMailComponent.CharSet := 'UTF-8';
-   end;
-
-   EMailComponent.Body.Text := PMailContent.Text;
+   EMailComponent.Body.Text := FMailContent.Text;
 
    SMTPComponent.Send(EMailComponent);
+
 end;
 end.

@@ -11,7 +11,7 @@ Daha detaylı bilgi için --> http://www.delphican.com/hhbmailcomponent-kolay-ma
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 [F.A.Q] [EN]
-1) Can an additional DLL be used if available?
+1) Can an additional DLL be used if available?<br>
 No, it only needs to have the DLL files "libeay32.dll" and "ssleay32.dll" in the folder.
 
 2) Do you need an additional reference?

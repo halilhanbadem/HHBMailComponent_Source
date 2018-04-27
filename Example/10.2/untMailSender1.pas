@@ -19,7 +19,8 @@ type
     Label1: TLabel;
     Label2: TLabel;
     edtMailSubject: TLabeledEdit;
-    HBBMailSend1: THBBMailSend;
+    edtAttachFilePath: TLabeledEdit;
+    HHBMailSend1: THHBMailSend;
     procedure btnMailSendClick(Sender: TObject);
   private
     { Private declarations }
@@ -36,7 +37,7 @@ implementation
 
 procedure TfrmMailSender.btnMailSendClick(Sender: TObject);
 begin
- with HBBMailSend1 do
+ with HHBMailSend1 do
  begin
    SMTPHost := edtSMTPAddress.Text; //Not just Google; you can experiment in Yandex or Hotmail!
    SMTPPort := StrToInt(edtSMTPPort.Text);  //Search with Google to find the appropriate port! e.g "Google SMTP settings"
@@ -46,9 +47,9 @@ begin
 
    ClientMailName := 'ClientName'; //Enter the client name
    ClientMailAddress := edtClientMail.Text; //Enter the client mail address
-   MailContentType := TextType;  //Enter the mail content type "HTML" or "TextType"
    MailContent.Text := memoMailContent.Lines.Text; //Enter the mail content.
    MailSubject := edtMailSubject.Text;  // Enter the mail subject.
+   AttachFile := edtAttachFilePath.Text;
 
    Connect;  //Connecting...
    SendMail; //Sending...

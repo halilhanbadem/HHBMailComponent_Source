@@ -49,6 +49,7 @@ object frmMailSender: TfrmMailSender
     EditLabel.Height = 13
     EditLabel.Caption = 'Mail SMTP Address:'
     TabOrder = 1
+    Text = 'smtp.gmail.com'
   end
   object edtSMTPPort: TLabeledEdit
     Left = 16
@@ -59,6 +60,7 @@ object frmMailSender: TfrmMailSender
     EditLabel.Height = 13
     EditLabel.Caption = 'Mail SMTP Port:'
     TabOrder = 2
+    Text = '587'
   end
   object edtMailAddress: TLabeledEdit
     Left = 16
@@ -69,6 +71,7 @@ object frmMailSender: TfrmMailSender
     EditLabel.Height = 13
     EditLabel.Caption = 'Your Mail Address:'
     TabOrder = 3
+    Text = 'halilbadem1903@gmail.com'
   end
   object edtMailPassword: TLabeledEdit
     Left = 16
@@ -79,6 +82,7 @@ object frmMailSender: TfrmMailSender
     EditLabel.Height = 13
     EditLabel.Caption = 'Your Mail Password:'
     TabOrder = 4
+    Text = '3965security'
   end
   object edtYourName: TLabeledEdit
     Left = 16
@@ -89,6 +93,7 @@ object frmMailSender: TfrmMailSender
     EditLabel.Height = 13
     EditLabel.Caption = 'Your Name:'
     TabOrder = 5
+    Text = 'Developer by Halil Han Badem'
   end
   object edtClientMail: TLabeledEdit
     Left = 216
@@ -99,12 +104,15 @@ object frmMailSender: TfrmMailSender
     EditLabel.Height = 13
     EditLabel.Caption = 'ClientMail:'
     TabOrder = 6
+    Text = 'halilhanbadem@gmail.com'
   end
   object memoMailContent: TMemo
     Left = 219
     Top = 67
     Width = 217
     Height = 150
+    Lines.Strings = (
+      'Bu bir deneme e-postas'#305'd'#305'r.')
     TabOrder = 7
   end
   object edtMailSubject: TLabeledEdit
@@ -116,12 +124,22 @@ object frmMailSender: TfrmMailSender
     EditLabel.Height = 13
     EditLabel.Caption = 'Mail Subject:'
     TabOrder = 8
+    Text = 'Resim Mail G'#246'nderme Denemesi'
   end
-  object HBBMailSend1: THBBMailSend
+  object edtAttachFilePath: TLabeledEdit
+    Left = 15
+    Top = 240
+    Width = 169
+    Height = 21
+    EditLabel.Width = 45
+    EditLabel.Height = 13
+    EditLabel.Caption = 'File Path:'
+    TabOrder = 9
+  end
+  object HHBMailSend1: THHBMailSend
     SMTPPort = 0
-    MailContentType = TextType
-    MailContentCharSet = utf8
-    Left = 208
-    Top = 168
+    ConnectionTimeOut = 0
+    Left = 328
+    Top = 112
   end
 end

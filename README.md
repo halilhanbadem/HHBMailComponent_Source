@@ -41,7 +41,7 @@ Yes, I will continue to produce more components to facilitate some areas that ar
 Of course, it makes me happier. I already have a small note at the beginning of the source file.
 
 10) What does HHB mean?<br>
-Initials of my name and my surname. "H" ally "H" an "B" adem
+Initials of my name and my surname. "H" alil "H" an "B" adem
 
 
 ----------------------------------------------------------------------------------------------------------------------------------------

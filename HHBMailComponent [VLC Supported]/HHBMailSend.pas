@@ -3,7 +3,7 @@ unit HHBMailSend;
 
 {Hello my friend! Thank you for using the component I wrote. I hope you like it.
  Developer: Halil Han Badem
- Last update date: 25/04/2018  <--- You can change the place if you contribute!
+ Last update date: 04/05/2018  <--- You can change the place if you contribute!
  Written product Delphi XE10.2
  Last developer: If you have contributed, you can write your name here!}
 
@@ -33,10 +33,15 @@ interface
      IdSMTPBase,
      IdSMTP,
      IdAttachmentFile,
-     IdText;
+     IdText,
+     System.Threading,
+     SyncObjs,
+     IdEMailAddress,
+     ShellAPI;
 
 type
  THHBMailSend = Class(TComponent)
+
    private
      FAuthor: String;
      FMail: String;
@@ -51,6 +56,9 @@ type
      FSMTPName: String;
      FContentID: String;
      FMailContent: TStringList;
+     FAttachFiles: TStringList;
+     FAttachFilesType: TStringList;
+     FAttachFilesID: TStringList;
      FConnectTimeOut: Integer;
      FAttachFileName: string;
      FAttachType: String;
@@ -58,11 +66,17 @@ type
      EMailComponent: TIdMessage;
      LHandlerComponent: TIdSSLIOHandlerSocketOpenSSL;
      Procedure WLines(Value: TStringList);
+     Procedure WAttachFiles(Value: TStringList);
+     Procedure WAttachFilesType(Value: TStringList);
+     Procedure WAttachFilesID(Value: TStringList);
    public
      Destructor Destroy; override;
      Constructor Create(AOwner: TComponent); override;
      Procedure Connect;
      Procedure SendMail;
+     property AttachFiles: TStringList read FAttachFiles write WAttachFiles;
+     property AttachFilesType: TStringList read FAttachFilesType write WAttachFilesType;
+     property AttachFilesID: TStringList read FAttachFilesID write WAttachFilesID;
    published
     property AuthorName: String read FAuthor;
     property AuthorMailAddress: String read FMail;
@@ -83,8 +97,9 @@ type
  End;
     Procedure Register;
 implementation
-     {HBBMailSend}
 
+
+     {HBBMailSend}
 
 procedure Register;
 begin
@@ -98,6 +113,9 @@ begin
   FAuthor := 'Halil Han Badem';    //Please do not change
   FMail := 'halilbadem1903@gmail.com'; //For communication
   FMailContent := TStringList.Create;
+  FAttachFiles := TStringList.Create;
+  FAttachFilesType := TStringList.Create;
+  FAttachFilesID := TStringList.Create;
   SMTPComponent := TIdSMTP.Create(nil);
   EMailComponent := TIdMessage.Create(nil);
   LHandlerComponent := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
@@ -116,9 +134,26 @@ begin
   FMailContent.Assign(Value);
 end;
 
+
+Procedure THHBMailSend.WAttachFiles(Value: TStringList);
+begin
+  FAttachFiles.Assign(Value);
+end;
+
+Procedure THHBMailSend.WAttachFilesType(Value: TStringList);
+begin
+  FAttachFilesType.Assign(Value);
+end;
+
+Procedure THHBMailSend.WAttachFilesID(Value: TStringList);
+begin
+  FAttachFilesID.Assign(Value);
+end;
+
+
 Procedure THHBMailSend.Connect;
 begin
-  if SMTPComponent.Connected then SMTPComponent.Disconnect();
+   if SMTPComponent.Connected then SMTPComponent.Disconnect();
 
    SMTPComponent.Host := FSMTPHost;
    SMTPComponent.AuthType := satDefault;
@@ -140,12 +175,16 @@ begin
    SMTPComponent.ConnectTimeout := FConnectTimeOut;
 
 
-   SMTPComponent.Connect;      ///connect...
-end;
+   SMTPComponent.Connect;
+ end;
+
 
 
 procedure THHBMailSend.SendMail;
+var
+ I: Integer;
 begin
+ try
    EMailComponent.Clear;
    EMailComponent.From.Address := FSMTPMailAddress;
    EMailComponent.From.Name := FSMTPName;
@@ -161,6 +200,37 @@ begin
      Body.Text := FMailContent.Text;
      CharSet := 'utf-8';
      ContentType := 'text/html';
+   end;
+
+   if Trim(FAttachFiles.Text) <> '' then
+   begin
+     if FAttachFiles.Count <> 0 then
+     begin
+       FAttachFileName := '';
+
+       if (FAttachFiles.Count <> FAttachFilesType.Count) or (FAttachFiles.Count <> FAttachFilesID.Count) then
+       begin
+         ShowMessage(PChar('There'+#39+'s a problem with multiple files you'+#39+'re about to send!' + sLineBreak + sLineBreak +'Tip: AttachFiles, AttachFilesType, AttachFilesID quantities must be the same. You will be directed to the "help" link for a better description.'));
+         ShellExecute(0, 'open', 'https://github.com/halilhanbadem/HHBMailComponent_Source/issues/1', nil, nil, SW_SHOWNORMAL);
+         exit;
+       end
+       else
+       begin
+         for I := 0 to FAttachFiles.Count - 1 do
+         begin
+           if FileExists(FAttachFiles.Strings[I], True) = True then
+           begin
+             with TIdAttachmentFile.Create(EMailComponent.MessageParts, FAttachFiles.Strings[I]) do
+             begin
+               ContentType := FAttachFilesType.Strings[I];
+               ContentID := FAttachFilesID.Strings[I];
+               DisplayName := ExtractFileName(FAttachFiles.Strings[I]);
+               FileName := ExtractFilePath(FAttachFiles.Strings[I]);
+             end;
+           end;
+         end;
+       end;
+     end;
    end;
 
     if FAttachFileName.Length <> 0 then
@@ -180,6 +250,8 @@ begin
    EMailComponent.Body.Text := FMailContent.Text;
 
    SMTPComponent.Send(EMailComponent);
-
+ finally
+   EMailComponent.MessageParts.Clear;
+ end;
 end;
 end.

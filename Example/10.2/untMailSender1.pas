@@ -19,9 +19,11 @@ type
     Label1: TLabel;
     Label2: TLabel;
     edtMailSubject: TLabeledEdit;
-    edtAttachFilePath: TLabeledEdit;
     HHBMailSend1: THHBMailSend;
+    FileList: TListBox;
+    btnAddFiles: TButton;
     procedure btnMailSendClick(Sender: TObject);
+    procedure btnAddFilesClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -34,9 +36,15 @@ var
 implementation
 
 {$R *.dfm}
+  uses FileProperty1;
+procedure TfrmMailSender.btnAddFilesClick(Sender: TObject);
+begin
+ frmFileDescription.ShowModal;
+end;
 
 procedure TfrmMailSender.btnMailSendClick(Sender: TObject);
 begin
+try
  with HHBMailSend1 do
  begin
    SMTPHost := edtSMTPAddress.Text; //Not just Google; you can experiment in Yandex or Hotmail!
@@ -49,11 +57,13 @@ begin
    ClientMailAddress := edtClientMail.Text; //Enter the client mail address
    MailContent.Text := memoMailContent.Lines.Text; //Enter the mail content.
    MailSubject := edtMailSubject.Text;  // Enter the mail subject.
-   AttachFile := edtAttachFilePath.Text;
 
    Connect;  //Connecting...
    SendMail; //Sending...
  end;
+finally
+ MessageBox(handle, 'Successfully!', 'OK', MB_OK + mb_iconinformation);
+end;
 end;
 
 end.

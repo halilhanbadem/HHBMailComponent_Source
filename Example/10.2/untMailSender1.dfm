@@ -4,8 +4,8 @@ object frmMailSender: TfrmMailSender
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Example for Delphi XE10.2 Mail Sender -- Halil Han Badem'
-  ClientHeight = 343
-  ClientWidth = 444
+  ClientHeight = 336
+  ClientWidth = 685
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,26 +19,28 @@ object frmMailSender: TfrmMailSender
   object Label1: TLabel
     Left = 219
     Top = 51
-    Width = 64
+    Width = 151
     Height = 13
-    Caption = 'Mail Content:'
+    Caption = 'Mail Content(HTML Supported):'
   end
   object Label2: TLabel
     Left = 16
-    Top = 295
+    Top = 288
     Width = 243
     Height = 13
     Caption = 'You need to use SSL / TLS supported port number.'
   end
   object btnMailSend: TButton
     Left = 0
-    Top = 314
-    Width = 444
+    Top = 307
+    Width = 685
     Height = 29
     Align = alBottom
     Caption = 'Mail Send'
     TabOrder = 0
     OnClick = btnMailSendClick
+    ExplicitTop = 314
+    ExplicitWidth = 444
   end
   object edtSMTPAddress: TLabeledEdit
     Left = 16
@@ -71,7 +73,7 @@ object frmMailSender: TfrmMailSender
     EditLabel.Height = 13
     EditLabel.Caption = 'Your Mail Address:'
     TabOrder = 3
-    Text = 'halilbadem1903@gmail.com'
+    Text = 'yourmail@example.com'
   end
   object edtMailPassword: TLabeledEdit
     Left = 16
@@ -81,8 +83,9 @@ object frmMailSender: TfrmMailSender
     EditLabel.Width = 96
     EditLabel.Height = 13
     EditLabel.Caption = 'Your Mail Password:'
+    PasswordChar = '*'
     TabOrder = 4
-    Text = '3965security'
+    Text = 'example'
   end
   object edtYourName: TLabeledEdit
     Left = 16
@@ -93,53 +96,62 @@ object frmMailSender: TfrmMailSender
     EditLabel.Height = 13
     EditLabel.Caption = 'Your Name:'
     TabOrder = 5
-    Text = 'Developer by Halil Han Badem'
+    Text = 'Your Name'
   end
   object edtClientMail: TLabeledEdit
     Left = 216
     Top = 24
-    Width = 217
+    Width = 273
     Height = 21
     EditLabel.Width = 49
     EditLabel.Height = 13
     EditLabel.Caption = 'ClientMail:'
     TabOrder = 6
-    Text = 'halilhanbadem@gmail.com'
+    Text = 'mail@example.com'
   end
   object memoMailContent: TMemo
     Left = 219
     Top = 67
-    Width = 217
-    Height = 150
+    Width = 270
+    Height = 194
     Lines.Strings = (
-      'Bu bir deneme e-postas'#305'd'#305'r.')
+      'This is a trial post.<br>'
+      ''
+      '<b>HTML support is available.</b>')
     TabOrder = 7
   end
   object edtMailSubject: TLabeledEdit
-    Left = 219
+    Left = 16
     Top = 240
-    Width = 214
+    Width = 161
     Height = 21
     EditLabel.Width = 61
     EditLabel.Height = 13
     EditLabel.Caption = 'Mail Subject:'
     TabOrder = 8
-    Text = 'Resim Mail G'#246'nderme Denemesi'
+    Text = 'HHBMail Component Trial EMail.'
   end
-  object edtAttachFilePath: TLabeledEdit
-    Left = 15
-    Top = 240
-    Width = 169
-    Height = 21
-    EditLabel.Width = 45
-    EditLabel.Height = 13
-    EditLabel.Caption = 'File Path:'
+  object FileList: TListBox
+    Left = 504
+    Top = 67
+    Width = 173
+    Height = 194
+    ItemHeight = 13
     TabOrder = 9
+  end
+  object btnAddFiles: TButton
+    Left = 504
+    Top = 22
+    Width = 173
+    Height = 25
+    Caption = 'Add File(s)'
+    TabOrder = 10
+    OnClick = btnAddFilesClick
   end
   object HHBMailSend1: THHBMailSend
     SMTPPort = 0
     ConnectionTimeOut = 0
-    Left = 328
-    Top = 112
+    Left = 384
+    Top = 216
   end
 end

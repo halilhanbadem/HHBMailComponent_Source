@@ -61,22 +61,23 @@ type
      FAttachFilesID: TStringList;
      FConnectTimeOut: Integer;
      FAttachFileName: string;
+     FVersion: String;
      FAttachType: String;
      SMTPComponent: TIdSMTP;
      EMailComponent: TIdMessage;
      LHandlerComponent: TIdSSLIOHandlerSocketOpenSSL;
-     Procedure WLines(Value: TStringList);
-     Procedure WAttachFiles(Value: TStringList);
-     Procedure WAttachFilesType(Value: TStringList);
-     Procedure WAttachFilesID(Value: TStringList);
+     Procedure SetLines(Value: TStringList);
+     Procedure SetAttachFiles(Value: TStringList);
+     Procedure SetAttachFilesType(Value: TStringList);
+     Procedure SetAttachFilesID(Value: TStringList);
    public
      Destructor Destroy; override;
      Constructor Create(AOwner: TComponent); override;
      Procedure Connect;
      Procedure SendMail;
-     property AttachFiles: TStringList read FAttachFiles write WAttachFiles;
-     property AttachFilesType: TStringList read FAttachFilesType write WAttachFilesType;
-     property AttachFilesID: TStringList read FAttachFilesID write WAttachFilesID;
+     property AttachFiles: TStringList read FAttachFiles write SetAttachFiles;
+     property AttachFilesType: TStringList read FAttachFilesType write SetAttachFilesType;
+     property AttachFilesID: TStringList read FAttachFilesID write SetAttachFilesID;
    published
     property AuthorName: String read FAuthor;
     property AuthorMailAddress: String read FMail;
@@ -88,12 +89,13 @@ type
     property ClientMailAddress: String read FClientMailAddress write FClientMailAddress;
     property ClientMailName: String read FClientMailName write FClientMailName;
     property MailReplyToAddress: String read FMailReplyToAddress write FMailReplyToAddress;
-    property MailContent: TStringList read FMailContent write WLines;
+    property MailContent: TStringList read FMailContent write SetLines;
     property MailName: String read FSMTPName write FSMTPName;
     property ConnectionTimeOut: Integer read FConnectTimeOut write FConnectTimeOut;
     property AttachFile: string read FAttachFileName write FAttachFileName;
     property AttachType: string read FAttachType write FAttachType;
     property AttachFileContentID: string read FContentID write FContentID;
+    property Version: string read FVersion;
  End;
     Procedure Register;
 implementation
@@ -112,6 +114,7 @@ begin
   inherited Create(AOwner);
   FAuthor := 'Halil Han Badem';    //Please do not change
   FMail := 'halilbadem1903@gmail.com'; //For communication
+  FVersion := 'V1.3';
   FMailContent := TStringList.Create;
   FAttachFiles := TStringList.Create;
   FAttachFilesType := TStringList.Create;
@@ -126,26 +129,30 @@ begin
   SMTPComponent.Destroy;
   EMailComponent.Destroy;
   LHandlerComponent.Destroy;
+  FMailContent.Destroy;
+  FAttachFiles.Destroy;
+  FAttachFilesType.Destroy;
+  FAttachFilesID.Destroy;
   inherited Destroy;
 end;
 
-Procedure THHBMailSend.WLines(Value: TStringList);
+Procedure THHBMailSend.SetLines(Value: TStringList);
 begin
   FMailContent.Assign(Value);
 end;
 
 
-Procedure THHBMailSend.WAttachFiles(Value: TStringList);
+Procedure THHBMailSend.SetAttachFiles(Value: TStringList);
 begin
   FAttachFiles.Assign(Value);
 end;
 
-Procedure THHBMailSend.WAttachFilesType(Value: TStringList);
+Procedure THHBMailSend.SetAttachFilesType(Value: TStringList);
 begin
   FAttachFilesType.Assign(Value);
 end;
 
-Procedure THHBMailSend.WAttachFilesID(Value: TStringList);
+Procedure THHBMailSend.SetAttachFilesID(Value: TStringList);
 begin
   FAttachFilesID.Assign(Value);
 end;
@@ -184,7 +191,7 @@ procedure THHBMailSend.SendMail;
 var
  I: Integer;
 begin
- try
+  try
    EMailComponent.Clear;
    EMailComponent.From.Address := FSMTPMailAddress;
    EMailComponent.From.Name := FSMTPName;
@@ -250,8 +257,12 @@ begin
    EMailComponent.Body.Text := FMailContent.Text;
 
    SMTPComponent.Send(EMailComponent);
- finally
-   EMailComponent.MessageParts.Clear;
- end;
+
+  finally
+    FAttachFiles.Clear;
+    FAttachFilesType.Clear;
+    FAttachFilesID.Clear;
+    EMailComponent.MessageParts.Clear;
+  end;
 end;
 end.

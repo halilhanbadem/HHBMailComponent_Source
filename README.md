@@ -18,7 +18,10 @@ _Update List_
 
 * Bug fixed.
 
+**V1.4**
 
+* Removed the HTML requirement for whitespace adjustment.
+* Version information was added to the properties section.
 
 -------------------------------------------------------------------------------------------------------------------
 

@@ -23,6 +23,11 @@ _Update List_
 * Removed the HTML requirement for whitespace adjustment.
 * Version information was added to the properties section.
 
+**V1.5**
+
+* Added Unigui support.
+.
+
 -------------------------------------------------------------------------------------------------------------------
 
 

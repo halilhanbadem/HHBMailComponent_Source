@@ -115,7 +115,7 @@ begin
   inherited Create(AOwner);
   FAuthor := 'Halil Han Badem';    //Please do not change
   FMail := 'halilhanbadem@gmail.com'; //For communication
-  FVersion := 'V1.4';
+  FVersion := 'V1.5';
   FMailContent := TStringList.Create;
   FAttachFiles := TStringList.Create;
   FAttachFilesType := TStringList.Create;
